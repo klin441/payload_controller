@@ -59,6 +59,6 @@ var _poll = function (i2cQueue, regs, intervalId, callback){
 
 
 //------some quick tests-----
-var I2C_Queue = require('./i2cqueue');
-var i2c_1 = new I2C_Queue(I2C_Queue.BUS1);
-takePhoto(i2c_1);
+//var I2C_Queue = require('./i2cqueue');
+//var i2c_1 = new I2C_Queue(I2C_Queue.BUS1);
+//takePhoto(i2c_1);
