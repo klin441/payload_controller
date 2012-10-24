@@ -14,9 +14,9 @@ function ShellQueue() {
     // Listener: when new task is added, check if queue is currently been 
     //    processed. If not, restart processing the queue
     self.on('newTaskAdded', function() {
-        console.log('newTaskAdded event raised, queue: ', self.queue);
+        console.log('newTaskAdded event raised, queue length: ', self.queue.length);
         if (self.isIdle) {
-            self.isIdel = 0;
+            self.isIdle = 0;
             self.execute();
             //console.log('Processing started');
         } else {
@@ -27,13 +27,13 @@ function ShellQueue() {
     // Listener: when a task completes, check for any more tasks on queue to process.
     //     if so, process them. Else puts ShellQueue into idle state
     self.on('taskComplete', function(cmd) {
-        console.log('task complete: ', cmd, 'queue: ', self.queue);
+        console.log('task complete: ', cmd, 'queue length: ', self.queue.length);
         if (self.queue.length > 0) {
-            console.log('still more tasks in queue, keep processing');
+            //console.log('still more tasks in queue, keep processing');
             self.execute();
         } else {
             self.isIdle = 1;
-            console.log('no more tasks to execute, module idle');
+            //console.log('no more tasks to execute, module idle');
         }
     })
 }
@@ -55,7 +55,6 @@ ShellQueue.prototype.add = function(shell_cmd_string, response) {
 ShellQueue.prototype.execute = function() {
     var self = this;
     var object = this.queue.shift();
-    console.log('shifted: ', object);
     // want blocking execution on the same queue 
     //console.log('about to execute ' + object.cmd);
     exec(object.cmd, function(error, stdout, stderr) {
@@ -69,3 +68,4 @@ ShellQueue.prototype.execute = function() {
 
 
 module.exports = ShellQueue;
+
