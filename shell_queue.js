@@ -7,6 +7,7 @@ var exec = require("child_process").exec;
 
 function ShellQueue() {
     var self = this;
+    console.log('this is: ', self);
     
     self.queue = [];		// a queue of shell tasks
     self.isIdle = 1;			// allows for the required blocking execution
@@ -14,7 +15,8 @@ function ShellQueue() {
     // Listener: when new task is added, check if queue is currently been 
     //    processed. If not, restart processing the queue
     self.on('newTaskAdded', function() {
-        console.log('newTaskAdded event raised, queue length: ', self.queue.length);
+       // console.log('newTaskAdded event raised, queue length: ', self.queue.length);
+        console.log('newTaskAdded event raised, queue : ', self.queue);
         if (self.isIdle) {
             self.isIdle = 0;
             self.execute();

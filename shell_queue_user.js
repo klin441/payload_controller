@@ -13,16 +13,22 @@ myQueue.add('sleep 5', response);
 myQueue.add('echo still awake?', response); 
 myQueue.add('echo 1 >> ./tmp', response);
 myQueue.add('echo 2 >> ./tmp', response);
+myQueue.add('echo 1st queue 1; sleep 1', response);
+myQueue.add('echo 1st queue 2; sleep 1', response);
+myQueue.add('echo 1st queue 3; sleep 1', response);
 
 myQueue2.add('echo 2nd queue 1; sleep 1', response2);
 myQueue2.add('echo 2nd queue 2; sleep 1', response2);
 myQueue2.add('echo 2nd queue 3; sleep 1', response2);
+myQueue2.add('echo 2nd queue 4; sleep 1', response2);
+myQueue2.add('echo 2nd queue 5; sleep 1', response2);
+
 
 
 
 setTimeout(function() {
     myQueue.add('echo adding to queue after timeout', response);
-}, 5000);
+}, 10000);
 
 
 // change listeners to one time only 
