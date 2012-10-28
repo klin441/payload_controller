@@ -7,40 +7,13 @@ var exec = require("child_process").exec;
 
 function ShellQueue() {
     var self = this;
-    console.log('this is: ', self);
     
     self.queue = [];		// a queue of shell tasks
     self.isIdle = 1;			// allows for the required blocking execution
-    
-    // Listener: when new task is added, check if queue is currently been 
-    //    processed. If not, restart processing the queue
-    self.on('newTaskAdded', function() {
-       // console.log('newTaskAdded event raised, queue length: ', self.queue.length);
-        console.log('newTaskAdded event raised, queue : ', self.queue);
-        if (self.isIdle) {
-            self.isIdle = 0;
-            self.execute();
-            //console.log('Processing started');
-        } else {
-            //console.log('already processing stuff');
-        }
-    });
-    
-    // Listener: when a task completes, check for any more tasks on queue to process.
-    //     if so, process them. Else puts ShellQueue into idle state
-    self.on('taskComplete', function(cmd) {
-        console.log('task complete: ', cmd, 'queue length: ', self.queue.length);
-        if (self.queue.length > 0) {
-            //console.log('still more tasks in queue, keep processing');
-            self.execute();
-        } else {
-            self.isIdle = 1;
-            //console.log('no more tasks to execute, module idle');
-        }
-    })
 }
 sys.inherits(ShellQueue, events.EventEmitter);
 
+// change to callbacks instead of listeners
 
 ShellQueue.prototype.add = function(shell_cmd_string, response) {
     var self = this;
@@ -49,21 +22,30 @@ ShellQueue.prototype.add = function(shell_cmd_string, response) {
     object.response = response;
     
     self.queue.push(object);
-    self.emit('newTaskAdded');
-    
+    if (self.isIdle) {
+        self.isIdle = 0;
+        self._execute();
+    }    
 }
 
-// self looping function that takes care of itself
-ShellQueue.prototype.execute = function() {
+// an internal function.
+ShellQueue.prototype._execute = function() {
     var self = this;
-    var object = this.queue.shift();
+    var object = self.queue.shift();
     // want blocking execution on the same queue 
-    //console.log('about to execute ' + object.cmd);
+    //console.log('about to _execute ' + object.cmd);
     exec(object.cmd, function(error, stdout, stderr) {
-        //console.log('cmd is ' + object.cmd);
-        //console.log('stdout is ' + stdout);
-        object.response.emit('complete', stdout, error);
-        self.emit('taskComplete', object.cmd);
+        
+        // tell outside world one task just completed
+        object.response.emit('complete', stdout, error, object.cmd);
+                
+        // keep processing the queue
+        if (self.queue.length > 0) {
+            self._execute();
+        } else {
+            // put queue into an idle state
+            self.isIdle = 1;
+        }
     });
 }
 
