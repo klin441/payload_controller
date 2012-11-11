@@ -18,7 +18,7 @@ exec('echo 1 > /sys/kernel/debug/omap_mux/spi0_sclk', function() {
             sp.write(chunk+"\n");
         });*/
         setInterval(function() {
-            sp.write("hello\n");
+            sp.write("hello\r");
         }, 1000);
         
         sp.on("data", function (data) {
