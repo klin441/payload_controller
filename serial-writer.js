@@ -3,14 +3,12 @@ var SerialPort = serialport.SerialPort; // localize object constructor
 var exec = require('child_process').exec;
 
 
-var baudrate = 9600;
 var stdin = process.openStdin();
 
 exec('echo 1 > /sys/kernel/debug/omap_mux/spi0_sclk', function() {
-    exec('echo 21 >/sys/kernel/debug/omap_mux/spi0_d0', function() {
-        sp = new SerialPort("/dev/ttyO2", {
-			parser: serialport.parsers.readline("\n"),
-			baudrate: baudrate,
+    exec('echo 21 > /sys/kernel/debug/omap_mux/spi0_d0', function() {
+        var sp = new SerialPort("/dev/ttyO2", {
+			baudrate: 9600,
 		});
         
         stdin.on('data', function(chunk) { 
