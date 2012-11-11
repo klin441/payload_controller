@@ -12,10 +12,14 @@ exec('echo 1 > /sys/kernel/debug/omap_mux/spi0_sclk', function() {
 			baudrate: 9600,
 		});
         
+        /*
         stdin.on('data', function(chunk) { 
             console.log("Got chunk: " + chunk);
             sp.write(chunk+"\n");
-        });
+        });*/
+        setInterval(function() {
+            sp.write("hello\n");
+        }, 1000);
         
         sp.on("data", function (data) {
 		    sys.puts("here: "+data);
