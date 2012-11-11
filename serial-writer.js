@@ -15,7 +15,7 @@ exec('echo 1 > /sys/kernel/debug/omap_mux/spi0_sclk', function() {
         
         stdin.on('data', function(chunk) { 
             console.log("Got chunk: " + chunk);
-            sp.write(chunk, "\n");
+            sp.write(chunk+"\n");
         });
     });
 });
