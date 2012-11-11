@@ -1,14 +1,15 @@
 
 
 function takePhoto(i2cQueue) {
-    var regs = {};
-    regs.chipAddr = 0x1e;   // dummy
-    regs.statusReg = 0x48;   // dummy
-    regs.completeStatus = 47;
-    regs.dataReg = 0x10;    // dummy
-    regs.numDataBytes = 10; 
-    regs.controlReg = 0x00;  // dummy
-    regs.controlByte = 0x00; // dummy
+    var regs = {
+		chipAddr: 0x1e,  // dummy
+		statusReg: 0x48,   // dummy
+		completeStatus: 47,
+		dataReg: 0x10,    // dummy
+		numDataBytes: 10, 
+		controlReg: 0x00,  // dummy
+		controlByte: 0x00, // dummy
+    };
     var pollInterval_s = 2 // in seconds
     
     i2cQueue.set(regs.chipAddr, regs.controlReg, regs.controlByte, function(error, stdout) {
@@ -16,9 +17,9 @@ function takePhoto(i2cQueue) {
     });
     
     // polling required to check if device finished taking the photo
-    _pollDevice(i2cQueue, regs, pollInterval_s, function onPollComplete(error) {
+    _pollDevice(i2cQueue, regs, pollInterval_s, function onReady(error) {
         // get the ready data
-        i2cQueue.get(regs.chipAddr, regs.dataReg, regs.numDataBytes, function(error, buffer) {
+        i2cQueue.get(regs.chipAddr, regs.dataReg, regs.numDataBytes, function onData(error, buffer) {
             // do something with data
             console.log('photo data received');
         });

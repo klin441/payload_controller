@@ -1,5 +1,3 @@
-var sys = require('sys');
-var events = require('events');
 var exec = require("child_process").exec;
 
 
@@ -7,11 +5,9 @@ function ShellQueue(name) {
     var self = this;
     self.name = name; 		// for debugging 
     self.queue = [];		// a queue of shell tasks
-    self.isIdle = 1;		// allows for the required blocking execution
+    self.isIdle = true;		// allows for the required blocking execution
 }
-//sys.inherits(ShellQueue, events.EventEmitter);
 
-// change to callbacks instead of listeners
 
 ShellQueue.prototype.addTask = function(shellCmdString, callback) {
     var self = this;
@@ -21,7 +17,7 @@ ShellQueue.prototype.addTask = function(shellCmdString, callback) {
     
     self.queue.push(task);
     if (self.isIdle) {
-        self.isIdle = 0;
+        self.isIdle = false;
         self._execute();
     }    
     
@@ -48,7 +44,7 @@ ShellQueue.prototype._execute = function() {
             self._execute();
         } else {
             // put queue into an idle state
-            self.isIdle = 1;
+            self.isIdle = true;
             console.log('queue', self.name, 'is idle', Date());
         }
     });
