@@ -5,7 +5,7 @@ var SerialPort = serialport.SerialPort; // localize object constructor
 var baudrate = 9600;
 
 
-function start(route, handle, cscUart) {
+function start(route, cmdSpecs, cscUart) {
     
     // set pinmux and create a serialport for csc uart port
     _setUartPinmux(cscUart); // should be made to be blocking, but guess ok this way...
@@ -17,6 +17,7 @@ function start(route, handle, cscUart) {
 
 	cscUartPort.on("data", function cscOnData(data) {
 	    console.log("cscUartPort received: ", data);
+	    route(data, cmdSpecs);
 	});
 	
 	console.log("Server has started.");
@@ -58,11 +59,11 @@ _UART_PINMUX = {
     },
     "2RX": {
        "path": "/sys/kernel/debug/omap_mux/spi0_sclk",
-       "value": 1
+       "value": 21
     },
     "2TX": {
        "path": "/sys/kernel/debug/omap_mux/spi0_d0",
-       "value": 21
+       "value": 1
     },
     "4RX": {
        "path": "/sys/kernel/debug/omap_mux/gpmc_wait0",

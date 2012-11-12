@@ -17,6 +17,7 @@ function takePhoto(i2cQueue) {
     });
     
     // polling required to check if device finished taking the photo
+    
     _pollDevice(i2cQueue, regs, pollInterval_s, function onReady(error) {
         // get the ready data
         i2cQueue.get(regs.chipAddr, regs.dataReg, regs.numDataBytes, function onData(error, buffer) {
@@ -26,10 +27,33 @@ function takePhoto(i2cQueue) {
     });
 }
 
+// remove the polling intervals on a given i2cQueue
+function clearPolls(i2cQueue) {
+    console.log('in clear polls for bus: '+i2cQueue.getBusNumber());
+    console.log('current active interval ids: ', Object.keys(_pollIds));
+    for (var intervalId in _pollIds) {
+        if (_pollIds[intervalId] === i2cQueue.getBusNumber()) {
+            console.log('clear hit');
+            clearInterval(intervalId);
+            delete _pollIds[intervalId];
+        }
+    }
+}
+
 exports.takePhoto = takePhoto;
+exports.clearPolls = clearPolls;
 
 
 /*******************************Internal functions*************************/
+
+// need a 'clean' internal object hash to keep track of active polling operations
+// hash key is the bus number, hash value is an array of timerobjects(ie intervalId objects)
+var _pollIds = Object.create(null);
+_pollIds[I2CQueue.BUS1] = [];
+_pollIds[I2CQueue.BUS2] = [];
+_pollIds[I2CQueue.BUS3] = [];
+
+
 
 // internal housekeeping function for polling devices at set interval 
 function _pollDevice(i2cQueue, regs, interval_s, callback) {
@@ -37,8 +61,10 @@ function _pollDevice(i2cQueue, regs, interval_s, callback) {
         _poll(i2cQueue, regs, intervalId, function(error){
             if (error) return callback(error);
             callback(error);
+            delete _pollIds[intervalId];  // remove hash entry after polling completed
         });
     }, interval_s*1000);
+    _pollIds[intervalId] = i2cQueue.getBusNumber();  // create 'hash-entry' for key=intervalId, value=i2cbusnumber
 }
 
 // poll device via i2cget; check for required statusReg; remove intervalID if ready and calls callback
@@ -50,7 +76,7 @@ var _poll = function (i2cQueue, regs, intervalId, callback){
 			callback(error); // execute callback which then go gets the ready data
 			clearInterval(intervalId); // removal interval execution of _poll
 		} else {
-			console.log('incorrect reg status: ', buffer, 'data not ready yet');
+			console.log('incorrect reg status got: ', buffer," ;expect: ", regs.completeStatus, 'data not ready yet');
 		}
 	});
 }
