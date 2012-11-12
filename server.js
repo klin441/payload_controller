@@ -1,15 +1,18 @@
 var fs = require('fs');
 var serialport = require("serialport");
 var SerialPort = serialport.SerialPort; // localize object constructor
-  
+
+var baudrate = 9600;
 
 
 function start(route, handle, cscUart) {
     
     // set pinmux and create a serialport for csc uart port
-    _setUartPinmux(cscUart);
+    _setUartPinmux(cscUart); // should be made to be blocking, but guess ok this way...
+    console.log('cscuart using: ', "/dev/ttyO"+cscUart);
     var cscUartPort = new SerialPort("/dev/ttyO"+cscUart, { 
-        parser: serialport.parsers.readline("\n") 
+        parser: serialport.parsers.readline("\n"),
+        baudrate: baudrate,
     });
 
 	cscUartPort.on("data", function cscOnData(data) {
@@ -29,10 +32,13 @@ exports.UART5 = "5";
 /******************Internal objects and functions**************/
 
 _setUartPinmux = function(uartport) {
-
+    console.log("set pin mux");
+    
     // create a file write stream to set pinmux black magic for the uart ports
     var filestream = fs.createWriteStream(_UART_PINMUX[uartport+'RX']["path"]);
+    console.log("create write stream: ", _UART_PINMUX[uartport+'RX']["path"]);
     filestream.end(_UART_PINMUX[uartport+'RX']["value"]);
+    console.log("stream.end: ", _UART_PINMUX[uartport+'RX']["value"]);
     filestream.destroy();
     
     filestream = fs.createWriteStream(_UART_PINMUX[uartport+'TX']["path"]);
