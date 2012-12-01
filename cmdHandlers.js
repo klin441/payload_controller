@@ -27,6 +27,7 @@ function takePhoto(i2cQueue) {
     });
 }
 
+// still working on it.... dont worry about this one...
 // remove the polling intervals on a given i2cQueue
 function clearPolls(i2cQueue) {
     console.log('in clear polls for bus: '+i2cQueue.getBusNumber());
@@ -45,6 +46,8 @@ exports.clearPolls = clearPolls;
 
 
 /*******************************Internal functions*************************/
+
+// still working on it......
 
 // need a 'clean' internal object hash to keep track of active polling operations
 // hash key is the bus number, hash value is an array of timerobjects(ie intervalId objects)

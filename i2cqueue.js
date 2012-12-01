@@ -26,8 +26,8 @@ I2CQueue.BUS3 = 3;
 I2CQueue.prototype.get = function(chipAddr, regAddr, numBytes, callback ) {
     //console.log('i2c get called');
     var self = this;
-    //var shellString = util.format('echo i2cget %d %d %d', self.bus, chipAddr, regAddr);
-    var shellString = util.format('echo %d', chipAddr);
+    //var shellString = util.format('i2cget %d %d %d', self.bus, chipAddr, regAddr);
+    var shellString = util.format('echo %d', chipAddr); // for debugging
     self.shellQueue.addTask(shellString, function onGetComplete(error, stdout) {
         if (error) return callback(error);
         if (typeof callback == 'function') {

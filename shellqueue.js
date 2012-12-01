@@ -1,6 +1,6 @@
 var exec = require("child_process").exec;
 
-
+// object constructor
 function ShellQueue(name) {
     var self = this;
     self.name = name; 		// for debugging 
